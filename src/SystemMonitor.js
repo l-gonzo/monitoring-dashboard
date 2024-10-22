@@ -36,8 +36,15 @@ const SystemMonitor = () => {
         disk: { total: 0, used: 0, percentage: 0 }
     });
 
+    const [fechaInicial, setFechaInicial] = useState('');
+    const [horaInicial, setHoraInicial] = useState('');
+    const [fechaFinal, setFechaFinal] = useState('');
+    const [horaFinal, setHoraFinal] = useState('');
+    const [fechaCompletaInicial, setFechaCompletaInicial] = useState('');
+    const [fechaCompletaFinal, setFechaCompletaFinal] = useState('');
+
     const fetchSystemInfo = () => {
-        axios.get('http://localhost/monitoring-dashboard/data_server.php')
+        axios.get('http://localhost/monitoring-dashboard/backend/data_server.php')
             .then(response => {
                 const data = response.data;
                 const currentTime = new Date().toLocaleTimeString();
@@ -65,6 +72,21 @@ const SystemMonitor = () => {
             });
     };
 
+    const unirFechaInicial = () => {
+        setFechaCompletaInicial(fechaInicial + ' ' + horaInicial);
+    }
+
+    const unirFechaFinal = () => {
+        setFechaCompletaFinal(fechaFinal + ' ' + horaFinal);
+    }
+
+    useEffect(() => {
+        unirFechaInicial();
+        unirFechaFinal();
+        console.log("caca-i",fechaCompletaInicial);
+        console.log("caca-f",fechaCompletaFinal);
+    }, [fechaInicial, horaInicial, fechaFinal, horaFinal]);
+
     useEffect(() => {
         fetchSystemInfo();
         const interval = setInterval(fetchSystemInfo, 4000);
@@ -73,8 +95,20 @@ const SystemMonitor = () => {
 
     return (
         <div>
-            <h2>System Monitor</h2>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
+                <h2>System Monitor</h2>
 
+                
+            <div style={{ display: 'flex', flexDirection: 'row', height: '20px' }}>
+                <label>De:</label>
+                <input type="date" id="fecha" name="fecha" required onChange={(e) => setFechaInicial(e.target.value)}/>
+                <input type="time" id="hora" name="hora" required onChange={(e) => setHoraInicial(e.target.value)}/>
+                <label style={{marginLeft:'1vw'}}>A:</label>
+                <input type="date" id="fecha" name="fecha" required onChange={(e) => setFechaFinal(e.target.value)}/>
+                <input type="time" id="hora" name="hora" required onChange={(e) => setHoraFinal(e.target.value)}/>
+                <button >Ver historial</button>
+                </div>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'row' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
                     <ResourcesUsage title="CPU Usage" percentage={systemInfo.cpu_usage} clickEvent={() => setResourceView('cpu')} />
