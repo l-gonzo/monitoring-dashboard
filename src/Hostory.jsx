@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Plot from "react-plotly.js";
-import axios from 'axios';
 
-export const MemoryUsage = (memoryUsage) => {
-
+export const HistoryResource = (data) => {
 
     return (
         <div style={{
@@ -15,16 +13,16 @@ export const MemoryUsage = (memoryUsage) => {
             flexDirection: 'column',
             alignItems: 'center',
         }}>
-            <h2 style={{ color: '#333', marginBottom: '20px', fontSize: '1.8rem' }}>Memory Usage</h2>
+            <h2 style={{ color: '#333', marginBottom: '20px', fontSize: '1.8rem' }}>{data.typeResource} used</h2>
             <Plot
                 style={{ width: '100%', height: '65vh' }}
                 data={[
                     {
-                        x: memoryUsage.memoryUsage.x.slice(-15),
-                        y: memoryUsage.memoryUsage.y.slice(-15),
+                        x: data.data.x,
+                        y: data.data.y,
                         type: 'scatter',
                         mode: 'lines+points',
-                        marker: { color: '#32cd32' }, 
+                        marker: { color: data.typeResource === 'cpu' ? '#ff6347' : data.typeResource === 'memory' ? '#32cd32' : '#1e90ff'}, 
                     },
                 ]}
                 layout={{

@@ -21,7 +21,7 @@ export const CPUUsage = (cpuUsage) => {
             y: cpuUsage.cpuUsage.y.slice(-15),
             type: 'scatter',
             mode: 'lines+points',
-            marker: { color: '#ff6347' }, // Tomate color para resaltar la gráfica
+            marker: { color: '#ff6347' }, 
           },
         ]}
         layout={{

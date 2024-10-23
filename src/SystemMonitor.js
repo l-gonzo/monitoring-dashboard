@@ -3,6 +3,7 @@ import axios from 'axios';
 import { CPUUsage } from './CPUUsage';
 import { MemoryUsage } from './MemoryUsage';
 import { DiskUsage } from './DiskUsage';
+import { HistoryResource } from './Hostory';
 import { serverURL } from './url';
 
 const ResourcesUsage = ({ title, percentage, onClick = null }) => {
@@ -37,6 +38,9 @@ const SystemMonitor = () => {
     const [cpuUsage, setCpuUsage] = useState({ x: [], y: [] });
     const [memoryUsage, setMemoryUsage] = useState({ x: [], y: [] });
     const [diskUsage, setDiskUsage] = useState({ x: [], y: [] });
+    const [history, setHistory] = useState({ x: [], y: [] });
+    const [typeHistory, setTypeHistory] = useState('cpu');
+
     const [systemInfo, setSystemInfo] = useState({
         cpu_usage: 0,
         memory: { total: 0, used: 0, percentage: 0 },
@@ -60,7 +64,7 @@ const SystemMonitor = () => {
     
             const response = await fetch(`${serverURL}api.php?action=insertCpuUsage`, {
                 method: 'POST',
-                body: form, // Enviamos el FormData directamente
+                body: form, 
             });
     
             const data = await response.json();
@@ -80,7 +84,7 @@ const SystemMonitor = () => {
 
             const response = await fetch(`${serverURL}api.php?action=insertMemoryUsage`, {
                 method: 'POST',
-                body: form, // Enviamos el FormData directamente
+                body: form,
             });
 
             const data = await response.json();
@@ -98,7 +102,7 @@ const SystemMonitor = () => {
 
             const response = await fetch(`${serverURL}api.php?action=insertDiskUsage`, {
                 method: 'POST',
-                body: form, // Enviamos el FormData directamente
+                body: form, 
             });
             const data = await response.json();
         } catch (error) {
@@ -155,6 +159,36 @@ const SystemMonitor = () => {
         setFullEndDate(`${dateRange.endDate} ${dateRange.endTime}`);
     };
 
+    const activateHistory = async (type, start_time, end_time) => {
+        setTypeHistory(type);
+        const serviceName = 
+            type === 'cpu' 
+                ? 'getCpuUsageByRange' 
+                : type === 'memory' 
+                    ? 'getMemoryUsageByRange' 
+                    : 'getDiskUsageByRange';
+    
+        try {
+            const response = await axios.get(`${serverURL}api.php?action=${serviceName}&start_time=${start_time}&end_time=${end_time}`);
+            const data = response.data;
+    
+            
+            if (data.status === 'success') {
+                // Extraer los valores de cpu_usage y timestamp
+                const y = data.data.map(item => type === 'cpu' ? item.cpu_usage : type === 'memory' ? item.memory_usage : item.disk_usage); // Para CPU
+                const x = data.data.map(item => item.timestamp); 
+    
+                
+                setHistory({ x, y });
+                setResourceView('history');
+            } else {
+                console.error('Error fetching data:', data.message);
+            }
+        } catch (error) {
+            console.error('Error in API call:', error);
+        }
+    };
+    
     useEffect(() => {
         updateFullDate()
     }, [dateRange]);
@@ -184,7 +218,9 @@ const SystemMonitor = () => {
                         border: 'none',
                         borderRadius: '5px',
                         cursor: 'pointer',
-                    }}>View History</button>
+                    }}
+                    onClick={() => activateHistory(resourceView, fullStartDate, fullEndDate)}
+                    >View History</button>
                 </div>
             </div>
 
@@ -199,6 +235,7 @@ const SystemMonitor = () => {
                     {resourceView === 'cpu' && <CPUUsage cpuUsage={cpuUsage} />}
                     {resourceView === 'memory' && <MemoryUsage memoryUsage={memoryUsage} />}
                     {resourceView === 'disk' && <DiskUsage diskUsage={diskUsage} />}
+                    {resourceView === 'history' && <HistoryResource data={history} typeResource={typeHistory}/>}
                 </div>
             </div>
         </div>

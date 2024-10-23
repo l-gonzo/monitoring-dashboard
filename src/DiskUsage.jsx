@@ -24,7 +24,7 @@ export const DiskUsage = (diskUsage) => {
                         y: diskUsage.diskUsage.y.slice(-15),
                         type: 'scatter',
                         mode: 'lines+points',
-                        marker: { color: '#1e90ff' }, // Tomate color para resaltar la gráfica
+                        marker: { color: '#1e90ff' }, 
                     },
                 ]}
                 layout={{
