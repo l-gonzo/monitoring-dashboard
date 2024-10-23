@@ -1,8 +1,6 @@
 <?php
-// Asegúrate de que no haya nada antes de esta línea
 header('Content-Type: application/json');
 
-// Tu lógica de conexión aquí...
 
 
 class Connect {
