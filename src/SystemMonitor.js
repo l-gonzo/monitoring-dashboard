@@ -160,25 +160,32 @@ const SystemMonitor = () => {
     };
 
     const activateHistory = async (type, start_time, end_time) => {
-        setTypeHistory(type);
-        const serviceName = 
-            type === 'cpu' 
-                ? 'getCpuUsageByRange' 
-                : type === 'memory' 
-                    ? 'getMemoryUsageByRange' 
+        let typeAux = typeHistory;
+        if (type === 'history') {
+
+        } else {
+            setTypeHistory(type);
+            typeAux = type;
+        }
+
+        const serviceName =
+            typeAux === 'cpu'
+                ? 'getCpuUsageByRange'
+                : typeAux === 'memory'
+                    ? 'getMemoryUsageByRange'
                     : 'getDiskUsageByRange';
-    
+
         try {
             const response = await axios.get(`${serverURL}api.php?action=${serviceName}&start_time=${start_time}&end_time=${end_time}`);
             const data = response.data;
-    
-            
+
+
             if (data.status === 'success') {
                 // Extraer los valores de cpu_usage y timestamp
-                const y = data.data.map(item => type === 'cpu' ? item.cpu_usage : type === 'memory' ? item.memory_usage : item.disk_usage); // Para CPU
-                const x = data.data.map(item => item.timestamp); 
-    
-                
+                const y = data.data.map(item => typeAux === 'cpu' ? item.cpu_usage : typeAux === 'memory' ? item.memory_usage : item.disk_usage); // Para CPU
+                const x = data.data.map(item => item.timestamp);
+
+
                 setHistory({ x, y });
                 setResourceView('history');
             } else {
@@ -188,7 +195,7 @@ const SystemMonitor = () => {
             console.error('Error in API call:', error);
         }
     };
-    
+
     useEffect(() => {
         updateFullDate()
     }, [dateRange]);
@@ -205,7 +212,7 @@ const SystemMonitor = () => {
                 <h1 style={{ fontSize: '2rem', color: '#333' }}>System Monitor</h1>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
 
-                {/*
+                    {/*
                 <label style={{ marginRight: '10px', fontSize: '1rem', color: '#555' }}>From:</label>
                     <input type="date" onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }} />
                     <input type="time" onChange={(e) => setDateRange(prev => ({ ...prev, startTime: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} />
@@ -221,7 +228,7 @@ const SystemMonitor = () => {
                         onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
                         style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }}
                     />
-                    <select onChange={(e) => {setDateRange(prev => ({ ...prev, startTime: e.target.value })); console.log(e.target.value)}} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px' }}>
+                    <select onChange={(e) => { setDateRange(prev => ({ ...prev, startTime: e.target.value })); console.log(e.target.value) }} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px' }}>
                         <option value="">Select Time</option>
                         {Array.from({ length: 24 }, (_, hour) => (
                             <option key={hour} value={`${hour.toString().padStart(2, '0')}:00`}>
