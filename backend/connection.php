@@ -1,48 +1,62 @@
 <?php
-class Conexion {
-    private $host = 'localhost';   // Servidor de la base de datos
-    private $db = 'system_monytor';  // Nombre de la base de datos
-    private $user = 'gonzo';  // Usuario de la base de datos
-    private $pass = 'gonzo1010!';  // Contraseña de la base de datos
-    private $charset = 'utf8mb4';  // Charset de la conexión
+// Asegúrate de que no haya nada antes de esta línea
+header('Content-Type: application/json');
+
+// Tu lógica de conexión aquí...
+
+
+class Connect {
+    private $host = 'localhost'; 
+    private $db = 'system_monytor';
+    private $user = 'gonzo'; 
+    private $pass = 'gonzo1010!'; 
     private $pdo;
-    private $error;
 
     public function __construct() {
-        $dsn = "mysql:host={$this->host};dbname={$this->db};charset={$this->charset}";
-        $options = [
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,  // Manejo de errores con excepciones
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,  // Devuelve los resultados como arrays asociativos
-            PDO::ATTR_PERSISTENT => true,  // Mantiene la conexión persistente
-        ];
+        $this->connect();
+    }
 
+    private function connect() {
         try {
-            $this->pdo = new PDO($dsn, $this->user, $this->pass, $options);
+            $this->pdo = new PDO("mysql:host={$this->host};dbname={$this->db}", $this->user, $this->pass);
+            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch (PDOException $e) {
-            $this->error = $e->getMessage();
-            echo "Error de conexión: " . $this->error;
+            die("Connection failed: " . $e->getMessage());
         }
     }
 
-    // Método para obtener la instancia PDO (la conexión)
-    public function getConexion() {
-        return $this->pdo;
+    public function insertCpuUsage($login_user, $cpu_usage) {
+        $stmt = $this->pdo->prepare("INSERT INTO cpu_history (login_user, cpu_usage) VALUES (:login_user, :cpu_usage)");
+        $stmt->execute(['login_user' => $login_user, 'cpu_usage' => $cpu_usage]);
     }
 
-    // Método para ejecutar una consulta SQL simple
-    public function ejecutarConsulta($sql, $params = []) {
-        try {
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute($params);
-            return $stmt;
-        } catch (PDOException $e) {
-            echo "Error en la consulta: " . $e->getMessage();
-        }
+    public function insertMemoryUsage($login_user, $memory_usage) {
+        $stmt = $this->pdo->prepare("INSERT INTO memory_history (login_user, memory_usage) VALUES (:login_user, :memory_usage)");
+        $stmt->execute(['login_user' => $login_user, 'memory_usage' => $memory_usage]);
     }
 
-    // Método para cerrar la conexión
-    public function cerrarConexion() {
-        $this->pdo = null;
+    public function insertDiskUsage($login_user, $disk_usage) {
+        $stmt = $this->pdo->prepare("INSERT INTO disk_history (login_user, disk_usage) VALUES (:login_user, :disk_usage)");
+        $stmt->execute(['login_user' => $login_user, 'disk_usage' => $disk_usage]);
+    }
+
+    public function getCpuUsageByRange($start_time, $end_time) {
+        $stmt = $this->pdo->prepare("SELECT * FROM cpu_history WHERE timestamp BETWEEN :start_time AND :end_time");
+        $stmt->execute(['start_time' => $start_time, 'end_time' => $end_time]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getMemoryUsageByRange($start_time, $end_time) {
+        $stmt = $this->pdo->prepare("SELECT * FROM memory_history WHERE timestamp BETWEEN :start_time AND :end_time");
+        $stmt->execute(['start_time' => $start_time, 'end_time' => $end_time]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getDiskUsageByRange($start_time, $end_time) {
+        $stmt = $this->pdo->prepare("SELECT * FROM disk_history WHERE timestamp BETWEEN :start_time AND :end_time");
+        $stmt->execute(['start_time' => $start_time, 'end_time' => $end_time]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 }
+
 ?>

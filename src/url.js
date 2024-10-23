@@ -1,0 +1,1 @@
+export const serverURL = 'http://localhost/monitoring-dashboard/backend/';

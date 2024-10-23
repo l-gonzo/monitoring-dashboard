@@ -1,26 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Plot from 'react-plotly.js';
 import { CPUUsage } from './CPUUsage';
 import { MemoryUsage } from './MemoryUsage';
 import { DiskUsage } from './DiskUsage';
+import { serverURL } from './url';
 
-const ResourcesUsage = ({ title, percentage, clickEvent = null }) => {
+const ResourcesUsage = ({ title, percentage, onClick = null }) => {
     return (
         <div
             style={{
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                border: '1px solid black',
-                padding: '10px',
-                margin: '10px',
-                width: '18vw',
+                borderRadius: '12px',
+                background: 'linear-gradient(145deg, #e6e6e6, #ffffff)',
+                boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
+                padding: '20px',
+                margin: '20px',
+                width: '20vw',
+                height: '20vh',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease-in-out',
             }}
-            onClick={clickEvent}
+            onClick={onClick}
+            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
         >
-            <h1>{title}</h1>
-            <h2>{percentage}%</h2>
+            <h2 style={{ fontSize: '1.5rem', color: '#333' }}>{title}</h2>
+            <h3 style={{ fontSize: '2rem', color: '#4caf50' }}>{percentage}%</h3>
         </div>
     );
 };
@@ -33,59 +40,124 @@ const SystemMonitor = () => {
     const [systemInfo, setSystemInfo] = useState({
         cpu_usage: 0,
         memory: { total: 0, used: 0, percentage: 0 },
-        disk: { total: 0, used: 0, percentage: 0 }
+        disk: { total: 0, used: 0, percentage: 0 },
     });
+    const [dateRange, setDateRange] = useState({
+        startDate: '',
+        startTime: '',
+        endDate: '',
+        endTime: '',
+    });
+    const [fullStartDate, setFullStartDate] = useState('');
+    const [fullEndDate, setFullEndDate] = useState('');
 
-    const [fechaInicial, setFechaInicial] = useState('');
-    const [horaInicial, setHoraInicial] = useState('');
-    const [fechaFinal, setFechaFinal] = useState('');
-    const [horaFinal, setHoraFinal] = useState('');
-    const [fechaCompletaInicial, setFechaCompletaInicial] = useState('');
-    const [fechaCompletaFinal, setFechaCompletaFinal] = useState('');
-
-    const fetchSystemInfo = () => {
-        axios.get('http://localhost/monitoring-dashboard/backend/data_server.php')
-            .then(response => {
-                const data = response.data;
-                const currentTime = new Date().toLocaleTimeString();
-
-                setSystemInfo(data);
-
-                // Usar funciones de actualización para garantizar el estado correcto
-                setCpuUsage(prevCpuUsage => ({
-                    x: [...prevCpuUsage.x, currentTime],
-                    y: [...prevCpuUsage.y, data.cpu_usage]
-                }));
-
-                setMemoryUsage(prevMemoryUsage => ({
-                    x: [...prevMemoryUsage.x, currentTime],
-                    y: [...prevMemoryUsage.y, data.memory.percentage]
-                }));
-
-                setDiskUsage(prevDiskUsage => ({
-                    x: [...prevDiskUsage.x, currentTime],
-                    y: [...prevDiskUsage.y, data.disk.percentage]
-                }));
-            })
-            .catch(error => {
-                console.error("Error fetching system info", error);
+    const insertCpuUsage = async (login_user, cpu_usage) => {
+        try {
+            
+            const form = new FormData();
+            form.append('login_user', login_user);
+            form.append('cpu_usage', cpu_usage);
+    
+            const response = await fetch(`${serverURL}api.php?action=insertCpuUsage`, {
+                method: 'POST',
+                body: form, // Enviamos el FormData directamente
             });
+    
+            const data = await response.json();
+        } catch (error) {
+            console.error('Error inserting CPU usage:', error);
+        }
+    };
+    
+    
+
+    const insertMemoryUsage = async (login_user, memory_usage) => {
+        try {
+
+            const form = new FormData();
+            form.append('login_user', login_user);
+            form.append('memory_usage', memory_usage);
+
+            const response = await fetch(`${serverURL}api.php?action=insertMemoryUsage`, {
+                method: 'POST',
+                body: form, // Enviamos el FormData directamente
+            });
+
+            const data = await response.json();
+        } catch (error) {
+            console.error('Error inserting memory usage:', error);
+        }
     };
 
-    const unirFechaInicial = () => {
-        setFechaCompletaInicial(fechaInicial + ' ' + horaInicial);
-    }
+    const insertDiskUsage = async (login_user, disk_usage) => {
+        try {
 
-    const unirFechaFinal = () => {
-        setFechaCompletaFinal(fechaFinal + ' ' + horaFinal);
-    }
+            const form = new FormData();
+            form.append('login_user', login_user);
+            form.append('disk_usage', disk_usage);
+
+            const response = await fetch(`${serverURL}api.php?action=insertDiskUsage`, {
+                method: 'POST',
+                body: form, // Enviamos el FormData directamente
+            });
+            const data = await response.json();
+        } catch (error) {
+            console.error('Error inserting disk usage:', error);
+        }
+    };
+
+    const saveHistory = (type, user, usage) => {
+        if (type === 'cpu') {
+            insertCpuUsage(user, usage);
+        } else if (type === 'memory') {
+            insertMemoryUsage(user, usage);
+        } else if (type === 'disk') {
+            insertDiskUsage(user, usage);
+        }
+    };
+
+    const saveLogs = (user, cpu, memory, disk) => {
+        saveHistory('cpu', user, cpu);
+        saveHistory('memory', user, memory);
+        saveHistory('disk', user, disk);
+    };
+
+    const fetchSystemInfo = async () => {
+        try {
+            const response = await axios.get(`${serverURL}data_server.php`);
+            const data = response.data;
+            const currentTime = new Date().toLocaleTimeString();
+
+            setSystemInfo(data);
+            saveLogs(data.login_user, data.cpu_usage, data.memory.percentage, data.disk.percentage);
+
+            setCpuUsage(prev => ({
+                x: [...prev.x, currentTime],
+                y: [...prev.y, data.cpu_usage],
+            }));
+
+            setMemoryUsage(prev => ({
+                x: [...prev.x, currentTime],
+                y: [...prev.y, data.memory.percentage],
+            }));
+
+            setDiskUsage(prev => ({
+                x: [...prev.x, currentTime],
+                y: [...prev.y, data.disk.percentage],
+            }));
+        } catch (error) {
+            console.error('Error fetching system info:', error);
+        }
+    };
+
+    const updateFullDate = () => {
+        setFullStartDate(`${dateRange.startDate} ${dateRange.startTime}`);
+        setFullEndDate(`${dateRange.endDate} ${dateRange.endTime}`);
+    };
 
     useEffect(() => {
-        unirFechaInicial();
-        unirFechaFinal();
-        console.log("caca-i",fechaCompletaInicial);
-        console.log("caca-f",fechaCompletaFinal);
-    }, [fechaInicial, horaInicial, fechaFinal, horaFinal]);
+        updateFullDate()
+    }, [dateRange]);
 
     useEffect(() => {
         fetchSystemInfo();
@@ -94,29 +166,36 @@ const SystemMonitor = () => {
     }, []);
 
     return (
-        <div>
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'space-between' }}>
-                <h2>System Monitor</h2>
-
-                
-            <div style={{ display: 'flex', flexDirection: 'row', height: '20px' }}>
-                <label>De:</label>
-                <input type="date" id="fecha" name="fecha" required onChange={(e) => setFechaInicial(e.target.value)}/>
-                <input type="time" id="hora" name="hora" required onChange={(e) => setHoraInicial(e.target.value)}/>
-                <label style={{marginLeft:'1vw'}}>A:</label>
-                <input type="date" id="fecha" name="fecha" required onChange={(e) => setFechaFinal(e.target.value)}/>
-                <input type="time" id="hora" name="hora" required onChange={(e) => setHoraFinal(e.target.value)}/>
-                <button >Ver historial</button>
+        <div style={{ padding: '30px', background: '#f4f4f9', minHeight: '100vh' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+                <h1 style={{ fontSize: '2rem', color: '#333' }}>System Monitor</h1>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <label style={{ marginRight: '10px', fontSize: '1rem', color: '#555' }}>From:</label>
+                    <input type="date" onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))} style={{ padding: '5px' }} />
+                    <input type="time" onChange={(e) => setDateRange(prev => ({ ...prev, startTime: e.target.value }))} style={{ padding: '5px', marginLeft: '5px' }} />
+                    <label style={{ margin: '0 10px', fontSize: '1rem', color: '#555' }}>To:</label>
+                    <input type="date" onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))} style={{ padding: '5px' }} />
+                    <input type="time" onChange={(e) => setDateRange(prev => ({ ...prev, endTime: e.target.value }))} style={{ padding: '5px', marginLeft: '5px' }} />
+                    <button style={{
+                        padding: '10px 20px',
+                        marginLeft: '15px',
+                        backgroundColor: '#4caf50',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '5px',
+                        cursor: 'pointer',
+                    }}>View History</button>
                 </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'row' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                    <ResourcesUsage title="CPU Usage" percentage={systemInfo.cpu_usage} clickEvent={() => setResourceView('cpu')} />
-                    <ResourcesUsage title="Memory Usage" percentage={systemInfo.memory.percentage} clickEvent={() => setResourceView('memory')} />
-                    <ResourcesUsage title="Disk Usage" percentage={systemInfo.disk.percentage} clickEvent={() => setResourceView('disk')} />
+
+            <div style={{ display: 'flex', justifyContent: 'space-around' }}>
+                <div>
+                    <ResourcesUsage title="CPU Usage" percentage={systemInfo.cpu_usage} onClick={() => setResourceView('cpu')} />
+                    <ResourcesUsage title="Memory Usage" percentage={systemInfo.memory.percentage} onClick={() => setResourceView('memory')} />
+                    <ResourcesUsage title="Disk Usage" percentage={systemInfo.disk.percentage} onClick={() => setResourceView('disk')} />
                 </div>
 
-                <div>
+                <div style={{ width: '70%' }}>
                     {resourceView === 'cpu' && <CPUUsage cpuUsage={cpuUsage} />}
                     {resourceView === 'memory' && <MemoryUsage memoryUsage={memoryUsage} />}
                     {resourceView === 'disk' && <DiskUsage diskUsage={diskUsage} />}
