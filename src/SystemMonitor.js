@@ -57,23 +57,23 @@ const SystemMonitor = () => {
 
     const insertCpuUsage = async (login_user, cpu_usage) => {
         try {
-            
+
             const form = new FormData();
             form.append('login_user', login_user);
             form.append('cpu_usage', cpu_usage);
-    
+
             const response = await fetch(`${serverURL}api.php?action=insertCpuUsage`, {
                 method: 'POST',
-                body: form, 
+                body: form,
             });
-    
+
             const data = await response.json();
         } catch (error) {
             console.error('Error inserting CPU usage:', error);
         }
     };
-    
-    
+
+
 
     const insertMemoryUsage = async (login_user, memory_usage) => {
         try {
@@ -102,7 +102,7 @@ const SystemMonitor = () => {
 
             const response = await fetch(`${serverURL}api.php?action=insertDiskUsage`, {
                 method: 'POST',
-                body: form, 
+                body: form,
             });
             const data = await response.json();
         } catch (error) {
@@ -201,28 +201,59 @@ const SystemMonitor = () => {
 
     return (
         <div style={{ padding: '30px', background: '#f4f4f9', minHeight: '100vh' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
                 <h1 style={{ fontSize: '2rem', color: '#333' }}>System Monitor</h1>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <label style={{ marginRight: '10px', fontSize: '1rem', color: '#555' }}>From:</label>
-                    <input type="date" onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))} style={{ padding: '5px' }} />
-                    <input type="time" onChange={(e) => setDateRange(prev => ({ ...prev, startTime: e.target.value }))} style={{ padding: '5px', marginLeft: '5px' }} />
+
+                {/*
+                <label style={{ marginRight: '10px', fontSize: '1rem', color: '#555' }}>From:</label>
+                    <input type="date" onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }} />
+                    <input type="time" onChange={(e) => setDateRange(prev => ({ ...prev, startTime: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} />
+
                     <label style={{ margin: '0 10px', fontSize: '1rem', color: '#555' }}>To:</label>
-                    <input type="date" onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))} style={{ padding: '5px' }} />
-                    <input type="time" onChange={(e) => setDateRange(prev => ({ ...prev, endTime: e.target.value }))} style={{ padding: '5px', marginLeft: '5px' }} />
-                    <button style={{
-                        padding: '10px 20px',
-                        marginLeft: '15px',
-                        backgroundColor: '#4caf50',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '5px',
-                        cursor: 'pointer',
-                    }}
-                    onClick={() => activateHistory(resourceView, fullStartDate, fullEndDate)}
-                    >View History</button>
+                    <input type="date" onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }} />
+                    <input type="time" onChange={(e) => setDateRange(prev => ({ ...prev, endTime: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /> 
+                 */}
+
+                    <label style={{ marginRight: '10px', fontSize: '1rem', color: '#555' }}>From:</label>
+                    <input
+                        type="date"
+                        onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
+                        style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }}
+                    />
+                    <select onChange={(e) => {setDateRange(prev => ({ ...prev, startTime: e.target.value })); console.log(e.target.value)}} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px' }}>
+                        <option value="">Select Time</option>
+                        {Array.from({ length: 24 }, (_, hour) => (
+                            <option key={hour} value={`${hour.toString().padStart(2, '0')}:00`}>
+                                {hour < 12 ? `${hour}:00 AM` : `${hour - 12}:00 PM`}
+                            </option>
+                        ))}
+                    </select>
+
+                    <label style={{ margin: '0 10px', fontSize: '1rem', color: '#555' }}>To:</label>
+                    <input
+                        type="date"
+                        onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))}
+                        style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }}
+                    />
+                    <select onChange={(e) => setDateRange(prev => ({ ...prev, endTime: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }}>
+                        <option value="">Select Time</option>
+                        {Array.from({ length: 24 }, (_, hour) => (
+                            <option key={hour} value={`${hour.toString().padStart(2, '0')}:00`}>
+                                {hour < 12 ? `${hour}:00 AM` : `${hour - 12}:00 PM`}
+                            </option>
+                        ))}
+                    </select>
+
+                    <button
+                        style={{ padding: '10px 20px', marginLeft: '15px', backgroundColor: '#4caf50', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                        onClick={() => activateHistory(resourceView, fullStartDate, fullEndDate)}
+                    >
+                        View History
+                    </button>
                 </div>
             </div>
+
 
             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <div>
@@ -235,7 +266,7 @@ const SystemMonitor = () => {
                     {resourceView === 'cpu' && <CPUUsage cpuUsage={cpuUsage} />}
                     {resourceView === 'memory' && <MemoryUsage memoryUsage={memoryUsage} />}
                     {resourceView === 'disk' && <DiskUsage diskUsage={diskUsage} />}
-                    {resourceView === 'history' && <HistoryResource data={history} typeResource={typeHistory}/>}
+                    {resourceView === 'history' && <HistoryResource data={history} typeResource={typeHistory} />}
                 </div>
             </div>
         </div>
