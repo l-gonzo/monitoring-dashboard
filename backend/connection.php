@@ -6,8 +6,8 @@ header('Content-Type: application/json');
 class Connect {
     private $host = 'localhost'; 
     private $db = 'system_monytor';
-    private $user = 'gonzo'; 
-    private $pass = 'gonzo1010!'; 
+    private $user = 'root'; 
+    private $pass = ''; 
     private $pdo;
 
     public function __construct() {
