@@ -19,7 +19,7 @@ const ResourcesUsage = ({ title, percentage, onClick = null }) => {
                 padding: '20px',
                 margin: '20px',
                 width: '20vw',
-                height: '20vh',
+                height: '19.3vh',
                 cursor: 'pointer',
                 transition: 'transform 0.2s ease-in-out',
             }}
