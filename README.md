@@ -1,5 +1,5 @@
 
-# Proyecto React con Base de Datos
+# Monitor de sistema
 
 Este proyecto es una aplicación web construida con React en el frontend y utiliza una base de datos MySQL. A continuación, se detallan los pasos para clonar el repositorio, instalar las dependencias necesarias y configurar la base de datos.
 
