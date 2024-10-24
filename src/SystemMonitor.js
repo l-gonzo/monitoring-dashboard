@@ -50,6 +50,7 @@ const SystemMonitor = () => {
     const [history, setHistory] = useState({ x: [], y: [] });
     const [typeHistory, setTypeHistory] = useState('cpu');
     const [showError, setShowError] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('Something went wrong!');
 
 
     const [systemInfo, setSystemInfo] = useState({
@@ -86,6 +87,7 @@ const SystemMonitor = () => {
 
     const triggerError = () => {
         setShowError(true);
+        setErrorMessage('Something went wrong!');
     };
 
     const closeError = () => {
@@ -198,7 +200,6 @@ const SystemMonitor = () => {
             const response = await axios.get(`${serverURL}api.php?action=${serviceName}&start_time=${start_time}&end_time=${end_time}`);
             const data = response.data;
 
-            console.log(data);
             if (data.status === 'success') {
                 // Extraer los valores de cpu_usage y timestamp
                 const y = data.data.map(item => typeAux === 'cpu' ? item.cpu_usage : typeAux === 'memory' ? item.memory_usage : item.disk_usage); // Para CPU
@@ -208,8 +209,8 @@ const SystemMonitor = () => {
                 setHistory({ x, y });
                 setResourceView('history');
             } else if (data.status === 'error') {
-                console.log('putamadre', data.message);
                 triggerError();
+                setErrorMessage(data.message);
             } else {
                 console.error('Error fetching data:', data.message);
             }
@@ -230,7 +231,7 @@ const SystemMonitor = () => {
 
     return (
         <div style={{ padding: '30px', background: 'linear-gradient(145deg, #333333, #2c3e50, #333333)', minHeight: '100vh' }}>
-            {showError && <ErrorAlert message="¡Algo salió mal!" onClose={closeError} />}
+            {showError && <ErrorAlert message={errorMessage} onClose={closeError} />}
             <div style={{
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
                 background: 'linear-gradient(145deg, #333333, #2c3e50)', color: 'white',
@@ -259,7 +260,7 @@ const SystemMonitor = () => {
                         onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))}
                         style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }}
                     />
-                    <select onChange={(e) => { setDateRange(prev => ({ ...prev, startTime: e.target.value })); console.log(e.target.value) }} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px' }}>
+                    <select onChange={(e) => { setDateRange(prev => ({ ...prev, startTime: e.target.value })); }} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '10px' }}>
                         <option value="">Select Time</option>
                         {Array.from({ length: 24 }, (_, hour) => (
                             <option key={hour} value={`${hour.toString().padStart(2, '0')}:00`}>
