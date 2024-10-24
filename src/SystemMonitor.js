@@ -17,7 +17,7 @@ const ResourcesUsage = ({ title, percentage, onClick = null }) => {
                 alignItems: 'center',
                 borderRadius: '12px',
                 background: 'linear-gradient(145deg, #333333, #2c3e50)',
-                boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
+                boxShadow: '4px 4px 15px rgba(0, 0, 0, 0.5)',
                 padding: '20px',
                 margin: '20px',
                 width: '20vw',
@@ -233,7 +233,7 @@ const SystemMonitor = () => {
         <div style={{ padding: '30px', background: 'linear-gradient(145deg, #333333, #2c3e50, #333333)', minHeight: '100vh' }}>
             {showError && <ErrorAlert message={errorMessage} onClose={closeError} />}
             <div style={{
-                display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', padding: '20px', borderRadius: '8px', boxShadow: '4px 4px 15px rgba(0, 0, 0, 0.5)',
                 background: 'linear-gradient(145deg, #333333, #2c3e50)', color: 'white',
                 textShadow: `
             -1px -1px 0 white,
@@ -243,16 +243,6 @@ const SystemMonitor = () => {
             }}>
                 <h1 style={{ fontSize: '2rem', color: '#333' }}>System Monitor</h1>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
-
-                    {/*
-                <label style={{ marginRight: '10px', fontSize: '1rem', color: '#555' }}>From:</label>
-                    <input type="date" onChange={(e) => setDateRange(prev => ({ ...prev, startDate: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }} />
-                    <input type="time" onChange={(e) => setDateRange(prev => ({ ...prev, startTime: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} />
-
-                    <label style={{ margin: '0 10px', fontSize: '1rem', color: '#555' }}>To:</label>
-                    <input type="date" onChange={(e) => setDateRange(prev => ({ ...prev, endDate: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px', marginRight: '5px' }} />
-                    <input type="time" onChange={(e) => setDateRange(prev => ({ ...prev, endTime: e.target.value }))} style={{ padding: '10px', border: '1px solid #ccc', borderRadius: '5px' }} /> 
-                 */}
 
                     <label style={{ marginRight: '10px', fontSize: '1rem', color: '#555' }}>From:</label>
                     <input

@@ -4,10 +4,10 @@ import Plot from 'react-plotly.js';
 export const MemoryUsage = ( memoryUsage ) => {
   return (
     <div style={{
-      background: 'linear-gradient(145deg, #2c3e50, #333333)', // Fondo oscuro
+      background: 'linear-gradient(145deg, #2c3e50, #333333)', 
       padding: '20px',
       borderRadius: '12px',
-      boxShadow: '4px 4px 15px rgba(0, 0, 0, 0.5)', // Sombra más pronunciada
+      boxShadow: '4px 4px 15px rgba(0, 0, 0, 0.5)', 
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
