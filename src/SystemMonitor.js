@@ -1,47 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { CPUUsage } from './CPUUsage';
-import { MemoryUsage } from './MemoryUsage';
-import { DiskUsage } from './DiskUsage';
-import { HistoryResource } from './History';
-import { serverURL } from './url';
-import ErrorAlert from './AlertError';
-import SwitchButton from './SwitchButton';
+import { CPUUsage } from './MonitorComponents/CPUUsage';
+import { MemoryUsage } from './MonitorComponents/MemoryUsage';
+import { DiskUsage } from './MonitorComponents/DiskUsage';
+import { HistoryResource } from './MonitorComponents/History';
+import { serverURL } from './Shared/url';
+import ErrorAlert from './Alerts/AlertError';
+import SwitchButton from './Components/SwitchButton';
+import { Tab } from './Components/Tab';
 
-const ResourcesUsage = ({ title, percentage, onClick = null }) => {
-    //rgb(255, 152, 0)
-    return (
-        <div
-            style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                borderRadius: '12px',
-                background: 'linear-gradient(145deg, #333333, #2c3e50)',
-                boxShadow: '4px 4px 15px rgba(0, 0, 0, 0.5)',
-                padding: '20px',
-                margin: '20px',
-                width: '20vw',
-                height: '19.3vh',
-                cursor: 'pointer',
-                transition: 'transform 0.2s ease-in-out',
-                fontSize: '48px',
-                color: 'white',
-                textShadow: `
-            -1px -1px 0 white,
-            1px -1px 0 white,
-            -1px 1px 0 white,
-            1px 1px 0 white`
-            }}
-            onClick={onClick}
-            onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-            onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
-        >
-            <h2 style={{ fontSize: '1.5rem', color: '#333' }}>{title}</h2>
-            <h3 style={{ fontSize: '2rem', color: '#4caf50' }}>{percentage}%</h3>
-        </div>
-    );
-};
+
 
 const SystemMonitor = () => {
     const [resourceView, setResourceView] = useState('cpu');
@@ -306,9 +274,9 @@ const SystemMonitor = () => {
 
             <div style={{ display: 'flex', justifyContent: 'space-around' }}>
                 <div>
-                    <ResourcesUsage title="CPU Usage" percentage={systemInfo.cpu_usage} onClick={() => setResourceView('cpu')} />
-                    <ResourcesUsage title="Memory Usage" percentage={systemInfo.memory.percentage} onClick={() => setResourceView('memory')} />
-                    <ResourcesUsage title="Disk Usage" percentage={systemInfo.disk.percentage} onClick={() => setResourceView('disk')} />
+                    <Tab title="CPU Usage" percentage={systemInfo.cpu_usage} onClick={() => setResourceView('cpu')} />
+                    <Tab title="Memory Usage" percentage={systemInfo.memory.percentage} onClick={() => setResourceView('memory')} />
+                    <Tab title="Disk Usage" percentage={systemInfo.disk.percentage} onClick={() => setResourceView('disk')} />
                 </div>
 
                 <div style={{ width: '70%' }}>
