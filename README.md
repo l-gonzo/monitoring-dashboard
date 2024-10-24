@@ -8,6 +8,7 @@ Este proyecto es una aplicación web construida con React en el frontend y utili
 1. **Node.js**: Asegúrate de tener Node.js instalado en tu máquina. Puedes descargarlo [aquí](https://nodejs.org/).
 2. **Apache Server**: Este proyecto necesita estar ubicado en la carpeta de tu servidor Apache (`htdocs`, `html`, u otro directorio de tu preferencia).
 3. **MySQL**: Necesitarás un servidor MySQL en funcionamiento para importar el archivo `dump.sql` que creará la base de datos.
+4. **Python**: Necesitarás tener python instalado.
 
 ## Instalación
 
@@ -16,15 +17,15 @@ Este proyecto es una aplicación web construida con React en el frontend y utili
 #### Linux / macOS
 ```bash
 cd /var/www/html/  # O la carpeta donde esté tu servidor Apache (htdocs, etc.)
-git clone https://github.com/usuario/proyecto-react.git
-cd proyecto-react
+git clone https://github.com/l-gonzo/monitoring-dashboard.git
+cd monitoring-dashboard
 ```
 
 #### Windows
 ```bash
 cd C:/xampp/htdocs/  # O la carpeta donde esté tu servidor Apache
-git clone https://github.com/usuario/proyecto-react.git
-cd proyecto-react
+git clone https://github.com/l-gonzo/monitoring-dashboard.git
+cd monitoring-dashboard
 ```
 
 ### 2. Instalar dependencias
@@ -67,7 +68,7 @@ Debes importar este archivo en tu servidor MySQL para crear las tablas necesaria
 4. Importa el archivo SQL:
     ```bash
     USE system_monytor;
-    SOURCE /ruta/al/proyecto/backend/SQL/dump.sql;
+    SOURCE /server-path/monitoring-dashboard/backend/SQL/dump.sql;
     ```
 
 #### Usando phpMyAdmin
@@ -87,7 +88,4 @@ Es posible que necesites editar las credenciales de acceso a la base de datos en
 - **Node.js**
 - **MySQL**
 - **Apache**
-
-## Contacto
-
-Si tienes algún problema o pregunta, no dudes en abrir un issue en el repositorio o contactarme en [email@example.com](mailto:email@example.com).
+- **Python**
