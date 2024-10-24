@@ -1,0 +1,54 @@
+.switch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    width: 80px;
+    height: 40px;
+    border-radius: 20px;
+    background: linear-gradient(90deg, #4a4a4a, #1c1c1c);
+    border: 2px solid #888;
+    position: relative;
+    transition: background 0.3s ease-in-out, border 0.3s ease-in-out;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+  
+  .switch.on {
+    background: linear-gradient(90deg, #4caf50, #1b8f2e);
+    border: 2px solid #66bb6a;
+  }
+  
+  .knob {
+    width: 35px;
+    height: 35px;
+    background: #e0e0e0;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    transition: left 0.3s ease-in-out;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+  }
+  
+  .switch.on .knob {
+    left: calc(100% - 40px); /* Desplaza el knob hacia el lado derecho */
+  }
+  
+  .indicator {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    transition: background 0.3s ease-in-out;
+  }
+  
+  .switch.on .indicator {
+    background: rgba(255, 255, 255, 1); /* Cambia el color del indicador */
+  }
+  

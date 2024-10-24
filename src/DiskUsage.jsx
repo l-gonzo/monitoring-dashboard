@@ -5,14 +5,15 @@ export const DiskUsage = ( diskUsage ) => {
   return (
     <div style={{
       background: 'linear-gradient(145deg, #2c3e50, #333333)',
-      padding: '20px',
+      padding: '10px',
       borderRadius: '12px',
       boxShadow: '4px 4px 15px rgba(0, 0, 0, 0.5)', 
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
+      height: '95%',
     }}>
-      <h2 style={{ color: '#ffffff', marginBottom: '20px', fontSize: '1.8rem' }}>Disk Usage</h2>
+      <h2 style={{ color: '#ffffff', marginBottom: '10px', fontSize: '1.8rem' }}>Disk Usage</h2>
       <Plot
         style={{ width: '100%', height: '65vh' }}
         data={[

@@ -6,6 +6,7 @@ import { DiskUsage } from './DiskUsage';
 import { HistoryResource } from './History';
 import { serverURL } from './url';
 import ErrorAlert from './AlertError';
+import SwitchButton from './SwitchButton';
 
 const ResourcesUsage = ({ title, percentage, onClick = null }) => {
     //rgb(255, 152, 0)
@@ -50,6 +51,7 @@ const SystemMonitor = () => {
     const [history, setHistory] = useState({ x: [], y: [] });
     const [typeHistory, setTypeHistory] = useState('cpu');
     const [showError, setShowError] = useState(false);
+    const [keepRecords, setKeepRecords] = useState(true);
     const [errorMessage, setErrorMessage] = useState('Something went wrong!');
 
 
@@ -114,6 +116,16 @@ const SystemMonitor = () => {
         }
     };
 
+    const handleToggle = (state) => {
+        if (state) {
+            setKeepRecords(!keepRecords);
+        } else {
+            setKeepRecords(!keepRecords);
+        }
+    };
+
+
+
     const insertDiskUsage = async (login_user, disk_usage) => {
         try {
 
@@ -147,14 +159,17 @@ const SystemMonitor = () => {
         saveHistory('disk', user, disk);
     };
 
-    const fetchSystemInfo = async () => {
+    const fetchSystemInfo = async (keepLogs = false) => {
         try {
             const response = await axios.get(`${serverURL}data_server.php`);
             const data = response.data;
             const currentTime = new Date().toLocaleTimeString();
 
             setSystemInfo(data);
-            saveLogs(data.login_user, data.cpu_usage, data.memory.percentage, data.disk.percentage);
+
+            if (keepLogs === true) {
+                saveLogs(data.login_user, data.cpu_usage, data.memory.percentage, data.disk.percentage);
+            }
 
             setCpuUsage(prev => ({
                 x: [...prev.x, currentTime],
@@ -224,10 +239,10 @@ const SystemMonitor = () => {
     }, [dateRange]);
 
     useEffect(() => {
-        fetchSystemInfo();
-        const interval = setInterval(fetchSystemInfo, 4000);
+        const interval = setInterval(() => fetchSystemInfo(keepRecords), 4000);
         return () => clearInterval(interval);
-    }, []);
+    }, [keepRecords]); // Adding keepRecords here ensures the interval is reset if it changes
+
 
     return (
         <div style={{ padding: '30px', background: 'linear-gradient(145deg, #333333, #2c3e50, #333333)', minHeight: '100vh' }}>
@@ -277,7 +292,7 @@ const SystemMonitor = () => {
                     <button
                         style={{
                             padding: '10px 20px', marginLeft: '15px', backgroundColor: '#4caf50', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', transition: 'transform 0.2s ease-in-out',
-                            fontWeight: 'bold',    
+                            fontWeight: 'bold',
                         }}
                         onClick={() => activateHistory(resourceView, fullStartDate, fullEndDate)}
                         onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
@@ -302,6 +317,11 @@ const SystemMonitor = () => {
                     {resourceView === 'disk' && <DiskUsage diskUsage={diskUsage} />}
                     {resourceView === 'history' && <HistoryResource data={history} typeResource={typeHistory} />}
                 </div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'row', width: '100%', justifyContent: 'end', marginTop: '.0vh', marginRight: '2vw' }}>
+                <label style={{ marginRight: '10px', fontSize: '2rem', color: '#555' }}>Keep records:</label>
+                <SwitchButton onToggle={handleToggle} />
             </div>
         </div>
     );
