@@ -3,10 +3,12 @@ import axios from 'axios';
 import { CPUUsage } from './CPUUsage';
 import { MemoryUsage } from './MemoryUsage';
 import { DiskUsage } from './DiskUsage';
-import { HistoryResource } from './Hostory';
+import { HistoryResource } from './History';
 import { serverURL } from './url';
+import ErrorAlert from './AlertError';
 
 const ResourcesUsage = ({ title, percentage, onClick = null }) => {
+    //rgb(255, 152, 0)
     return (
         <div
             style={{
@@ -14,7 +16,7 @@ const ResourcesUsage = ({ title, percentage, onClick = null }) => {
                 flexDirection: 'column',
                 alignItems: 'center',
                 borderRadius: '12px',
-                background: 'linear-gradient(145deg, #e6e6e6, #ffffff)',
+                background: 'linear-gradient(145deg, #333333, #2c3e50)',
                 boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.1)',
                 padding: '20px',
                 margin: '20px',
@@ -22,6 +24,13 @@ const ResourcesUsage = ({ title, percentage, onClick = null }) => {
                 height: '19.3vh',
                 cursor: 'pointer',
                 transition: 'transform 0.2s ease-in-out',
+                fontSize: '48px',
+                color: 'white',
+                textShadow: `
+            -1px -1px 0 white,
+            1px -1px 0 white,
+            -1px 1px 0 white,
+            1px 1px 0 white`
             }}
             onClick={onClick}
             onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
@@ -40,6 +49,8 @@ const SystemMonitor = () => {
     const [diskUsage, setDiskUsage] = useState({ x: [], y: [] });
     const [history, setHistory] = useState({ x: [], y: [] });
     const [typeHistory, setTypeHistory] = useState('cpu');
+    const [showError, setShowError] = useState(false);
+
 
     const [systemInfo, setSystemInfo] = useState({
         cpu_usage: 0,
@@ -71,6 +82,14 @@ const SystemMonitor = () => {
         } catch (error) {
             console.error('Error inserting CPU usage:', error);
         }
+    };
+
+    const triggerError = () => {
+        setShowError(true);
+    };
+
+    const closeError = () => {
+        setShowError(false);
     };
 
 
@@ -179,7 +198,7 @@ const SystemMonitor = () => {
             const response = await axios.get(`${serverURL}api.php?action=${serviceName}&start_time=${start_time}&end_time=${end_time}`);
             const data = response.data;
 
-
+            console.log(data);
             if (data.status === 'success') {
                 // Extraer los valores de cpu_usage y timestamp
                 const y = data.data.map(item => typeAux === 'cpu' ? item.cpu_usage : typeAux === 'memory' ? item.memory_usage : item.disk_usage); // Para CPU
@@ -188,6 +207,9 @@ const SystemMonitor = () => {
 
                 setHistory({ x, y });
                 setResourceView('history');
+            } else if (data.status === 'error') {
+                console.log('putamadre', data.message);
+                triggerError();
             } else {
                 console.error('Error fetching data:', data.message);
             }
@@ -207,8 +229,17 @@ const SystemMonitor = () => {
     }, []);
 
     return (
-        <div style={{ padding: '30px', background: '#f4f4f9', minHeight: '100vh' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)' }}>
+        <div style={{ padding: '30px', background: 'linear-gradient(145deg, #333333, #2c3e50, #333333)', minHeight: '100vh' }}>
+            {showError && <ErrorAlert message="¡Algo salió mal!" onClose={closeError} />}
+            <div style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', padding: '20px', backgroundColor: '#f9f9f9', borderRadius: '8px', boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
+                background: 'linear-gradient(145deg, #333333, #2c3e50)', color: 'white',
+                textShadow: `
+            -1px -1px 0 white,
+            1px -1px 0 white,
+            -1px 1px 0 white,
+            1px 1px 0 white`
+            }}>
                 <h1 style={{ fontSize: '2rem', color: '#333' }}>System Monitor</h1>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
 
@@ -253,8 +284,13 @@ const SystemMonitor = () => {
                     </select>
 
                     <button
-                        style={{ padding: '10px 20px', marginLeft: '15px', backgroundColor: '#4caf50', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer' }}
+                        style={{
+                            padding: '10px 20px', marginLeft: '15px', backgroundColor: '#4caf50', color: '#fff', border: 'none', borderRadius: '5px', cursor: 'pointer', transition: 'transform 0.2s ease-in-out',
+                            fontWeight: 'bold',    
+                        }}
                         onClick={() => activateHistory(resourceView, fullStartDate, fullEndDate)}
+                        onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
+                        onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
                     >
                         View History
                     </button>

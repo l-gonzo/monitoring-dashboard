@@ -1,0 +1,90 @@
+.system-monitor-container {
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.date-range-controls {
+    display: flex;
+    align-items: center;
+}
+
+.label {
+    margin-right: 10px;
+}
+
+.date-input, .time-select {
+    margin-right: 10px;
+    padding: 5px;
+}
+
+.view-history-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.view-history-button:hover {
+    background-color: #0056b3;
+}
+
+.resources-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.resources {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.resource-card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.resource-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.resource-title {
+    font-size: 1.5rem;
+    color: #333;
+}
+
+.resource-percentage {
+    font-size: 1.2rem;
+    color: #666;
+}
+
+.chart-container {
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}

@@ -4,7 +4,7 @@ import SystemMonitor from './SystemMonitor';
 
 function App() {
   return (
-    <div >
+    <div style={{margin: '0px', padding: '0px'}}>
       <SystemMonitor />
     </div>
   );
